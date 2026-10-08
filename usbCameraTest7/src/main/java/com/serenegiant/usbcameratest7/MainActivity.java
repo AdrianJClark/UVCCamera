@@ -35,13 +35,15 @@ import android.widget.Toast;
 
 import com.serenegiant.common.BaseActivity;
 import com.serenegiant.usb.CameraDialog;
+import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.USBMonitor.OnDeviceConnectListener;
 import com.serenegiant.usb.USBMonitor.UsbControlBlock;
 import com.serenegiant.usb.UVCCamera;
-import com.serenegiant.usbcameracommon.UVCCameraHandler;
 import com.serenegiant.widget.CameraViewInterface;
 import com.serenegiant.widget.UVCCameraTextureView;
+
+import java.nio.ByteBuffer;
 
 /**
  * Show side by side view from two camera.
@@ -60,12 +62,10 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 
 	private UVCCameraHandler mHandlerR;
 	private CameraViewInterface mUVCCameraViewR;
-	private ImageButton mCaptureButtonR;
 	private Surface mRightPreviewSurface;
 
 	private UVCCameraHandler mHandlerL;
 	private CameraViewInterface mUVCCameraViewL;
-	private ImageButton mCaptureButtonL;
 	private Surface mLeftPreviewSurface;
 
 
@@ -78,17 +78,11 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 		mUVCCameraViewL = (CameraViewInterface)findViewById(R.id.camera_view_L);
 		mUVCCameraViewL.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
 		((UVCCameraTextureView)mUVCCameraViewL).setOnClickListener(mOnClickListener);
-		mCaptureButtonL = (ImageButton)findViewById(R.id.capture_button_L);
-		mCaptureButtonL.setOnClickListener(mOnClickListener);
-		mCaptureButtonL.setVisibility(View.INVISIBLE);
 		mHandlerL = UVCCameraHandler.createHandler(this, mUVCCameraViewL, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0]);
 
 		mUVCCameraViewR = (CameraViewInterface)findViewById(R.id.camera_view_R);
 		mUVCCameraViewR.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
 		((UVCCameraTextureView)mUVCCameraViewR).setOnClickListener(mOnClickListener);
-		mCaptureButtonR = (ImageButton)findViewById(R.id.capture_button_R);
-		mCaptureButtonR.setOnClickListener(mOnClickListener);
-		mCaptureButtonR.setVisibility(View.INVISIBLE);
 		mHandlerR = UVCCameraHandler.createHandler(this, mUVCCameraViewR, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1]);
 
 		mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
@@ -110,10 +104,8 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 		if (mUVCCameraViewR != null)
 			mUVCCameraViewR.onPause();
 		mHandlerL.close();
-		mCaptureButtonR.setVisibility(View.INVISIBLE);
 		if (mUVCCameraViewL != null)
 			mUVCCameraViewL.onPause();
-		mCaptureButtonL.setVisibility(View.INVISIBLE);
 		mUSBMonitor.unregister();
 		super.onStop();
 	}
@@ -131,9 +123,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 			mUSBMonitor = null;
 		}
 		mUVCCameraViewR = null;
-		mCaptureButtonR = null;
 		mUVCCameraViewL = null;
-		mCaptureButtonL = null;
 		super.onDestroy();
 	}
 
@@ -146,21 +136,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 						CameraDialog.showDialog(MainActivity.this);
 					} else {
 						mHandlerL.close();
-						setCameraButton();
-					}
-				}
-			} else if (view.getId() == R.id.capture_button_L) {
-				if (mHandlerL != null) {
-					if (mHandlerL.isOpened()) {
-						if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
-							if (!mHandlerL.isRecording()) {
-								mCaptureButtonL.setColorFilter(0xffff0000);    // turn red
-								mHandlerL.startRecording();
-							} else {
-								mCaptureButtonL.setColorFilter(0);    // return to default color
-								mHandlerL.stopRecording();
-							}
-						}
 					}
 				}
 			} else if (view.getId() == R.id.camera_view_R) {
@@ -169,21 +144,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 						CameraDialog.showDialog(MainActivity.this);
 					} else {
 						mHandlerR.close();
-						setCameraButton();
-					}
-				}
-			} else if (view.getId() == R.id.capture_button_R) {
-				if (mHandlerR != null) {
-					if (mHandlerR.isOpened()) {
-						if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
-							if (!mHandlerR.isRecording()) {
-								mCaptureButtonR.setColorFilter(0xffff0000);    // turn red
-								mHandlerR.startRecording();
-							} else {
-								mCaptureButtonR.setColorFilter(0);    // return to default color
-								mHandlerR.stopRecording();
-							}
-						}
 					}
 				}
 			}
@@ -202,24 +162,14 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 			if (DEBUG) Log.v(TAG, "onConnect:" + device);
 			if (!mHandlerL.isOpened()) {
 				mHandlerL.open(ctrlBlock);
+				mHandlerL.setFrameCallback(mIFrameCallbackL, UVCCamera.PIXEL_FORMAT_RGBX);
 				final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
 				mHandlerL.startPreview(new Surface(st));
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						mCaptureButtonL.setVisibility(View.VISIBLE);
-					}
-				});
 			} else if (!mHandlerR.isOpened()) {
 				mHandlerR.open(ctrlBlock);
+				mHandlerR.setFrameCallback(mIFrameCallbackR, UVCCamera.PIXEL_FORMAT_RGBX);
 				final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
 				mHandlerR.startPreview(new Surface(st));
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						mCaptureButtonR.setVisibility(View.VISIBLE);
-					}
-				});
 			}
 		}
 
@@ -235,7 +185,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 							mLeftPreviewSurface.release();
 							mLeftPreviewSurface = null;
 						}
-						setCameraButton();
 					}
 				}, 0);
 			} else if ((mHandlerR != null) && !mHandlerR.isEqual(device)) {
@@ -247,7 +196,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 							mRightPreviewSurface.release();
 							mRightPreviewSurface = null;
 						}
-						setCameraButton();
 					}
 				}, 0);
 			}
@@ -276,27 +224,26 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 
 	@Override
 	public void onDialogResult(boolean canceled) {
-		if (canceled) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					setCameraButton();
-				}
-			}, 0);
-		}
 	}
 
-	private void setCameraButton() {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if ((mHandlerL != null) && !mHandlerL.isOpened() && (mCaptureButtonL != null)) {
-					mCaptureButtonL.setVisibility(View.INVISIBLE);
-				}
-				if ((mHandlerR != null) && !mHandlerR.isOpened() && (mCaptureButtonR != null)) {
-					mCaptureButtonR.setVisibility(View.INVISIBLE);
-				}
-			}
-		}, 0);
-	}
+	private final IFrameCallback mIFrameCallbackL = new IFrameCallback() {
+		@Override
+		public void onFrame(final ByteBuffer frame) {
+			Log.d(TAG, "FrameCallbackL");
+				/*if (frameCallbackL!=null) {
+					frameCallbackL.onFrame(frame);
+				}*/
+		}
+	};
+
+	private final IFrameCallback mIFrameCallbackR = new IFrameCallback() {
+		@Override
+		public void onFrame(final ByteBuffer frame) {
+			Log.d(TAG, "FrameCallbackR");
+				/*if (frameCallbackR!=null) {
+					frameCallbackR.onFrame(frame);
+				}*/
+		}
+	};
+
 }
