@@ -27,6 +27,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 android {
 	compileSdkVersion versionCompiler
 	buildToolsVersion versionBuildTool
+	namespace "com.serenegiant.uvccamera"
 
 	compileOptions {
 		sourceCompatibility javaSourceCompatibility

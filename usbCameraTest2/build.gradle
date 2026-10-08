@@ -26,7 +26,8 @@ apply plugin: 'com.android.application'
 android {
 	compileSdkVersion versionCompiler
 	buildToolsVersion versionBuildTool
-
+	namespace "com.serenegiant.usbcameratest2"
+	
 	compileOptions {
 		sourceCompatibility javaSourceCompatibility
 		targetCompatibility javaTargetCompatibility
