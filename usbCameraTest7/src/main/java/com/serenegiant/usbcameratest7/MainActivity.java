@@ -28,6 +28,7 @@ import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -61,11 +62,11 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private USBMonitor mUSBMonitor;
 
 	private UVCCameraHandler mHandlerR;
-	private CameraViewInterface mUVCCameraViewR;
+	private SurfaceView mUVCCameraViewR;
 	private Surface mRightPreviewSurface;
 
 	private UVCCameraHandler mHandlerL;
-	private CameraViewInterface mUVCCameraViewL;
+	private SurfaceView mUVCCameraViewL;
 	private Surface mLeftPreviewSurface;
 
 
@@ -75,15 +76,13 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 		setContentView(R.layout.activity_main);
 
 		findViewById(R.id.RelativeLayout1).setOnClickListener(mOnClickListener);
-		mUVCCameraViewL = (CameraViewInterface)findViewById(R.id.camera_view_L);
-		mUVCCameraViewL.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
-		((UVCCameraTextureView)mUVCCameraViewL).setOnClickListener(mOnClickListener);
-		mHandlerL = UVCCameraHandler.createHandler(this, mUVCCameraViewL, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0]);
+		mUVCCameraViewL = (SurfaceView)findViewById(R.id.camera_view_L);
+		mUVCCameraViewL.setOnClickListener(mOnClickListener);
+		mHandlerL = UVCCameraHandler.createHandler(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0]);
 
-		mUVCCameraViewR = (CameraViewInterface)findViewById(R.id.camera_view_R);
-		mUVCCameraViewR.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
-		((UVCCameraTextureView)mUVCCameraViewR).setOnClickListener(mOnClickListener);
-		mHandlerR = UVCCameraHandler.createHandler(this, mUVCCameraViewR, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1]);
+		mUVCCameraViewR = (SurfaceView)findViewById(R.id.camera_view_R);
+		mUVCCameraViewR.setOnClickListener(mOnClickListener);
+		mHandlerR = UVCCameraHandler.createHandler(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1]);
 
 		mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
 	}
@@ -92,20 +91,20 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 	protected void onStart() {
 		super.onStart();
 		mUSBMonitor.register();
-		if (mUVCCameraViewR != null)
+		/*if (mUVCCameraViewR != null)
 			mUVCCameraViewR.onResume();
 		if (mUVCCameraViewL != null)
-			mUVCCameraViewL.onResume();
+			mUVCCameraViewL.onResume();*/
 	}
 
 	@Override
 	protected void onStop() {
 		mHandlerR.close();
-		if (mUVCCameraViewR != null)
-			mUVCCameraViewR.onPause();
+		//if (mUVCCameraViewR != null)
+		//	mUVCCameraViewR.onPause();
 		mHandlerL.close();
-		if (mUVCCameraViewL != null)
-			mUVCCameraViewL.onPause();
+		//if (mUVCCameraViewL != null)
+		//	mUVCCameraViewL.onPause();
 		mUSBMonitor.unregister();
 		super.onStop();
 	}
@@ -163,13 +162,13 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 			if (!mHandlerL.isOpened()) {
 				mHandlerL.open(ctrlBlock);
 				mHandlerL.setFrameCallback(mIFrameCallbackL, UVCCamera.PIXEL_FORMAT_RGBX);
-				final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
-				mHandlerL.startPreview(new Surface(st));
+				mLeftPreviewSurface = mUVCCameraViewL.getHolder().getSurface();
+				mHandlerL.startPreview(mLeftPreviewSurface);
 			} else if (!mHandlerR.isOpened()) {
 				mHandlerR.open(ctrlBlock);
 				mHandlerR.setFrameCallback(mIFrameCallbackR, UVCCamera.PIXEL_FORMAT_RGBX);
-				final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
-				mHandlerR.startPreview(new Surface(st));
+				mRightPreviewSurface = mUVCCameraViewR.getHolder().getSurface();
+				mHandlerR.startPreview(mRightPreviewSurface);
 			}
 		}
 

@@ -285,8 +285,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
 		private static final String TAG_THREAD = "CameraThread";
 		private final Object mSync = new Object();
 		private final Class<? extends AbstractUVCCameraHandler> mHandlerClass;
-		private final WeakReference<Activity> mWeakParent;
-		private final WeakReference<CameraViewInterface> mWeakCameraView;
 		private final Set<CameraCallback> mCallbacks = new CopyOnWriteArraySet<CameraCallback>();
 		private int mWidth, mHeight, mPreviewMode;
 		private float mBandwidthFactor;
@@ -300,15 +298,12 @@ abstract class AbstractUVCCameraHandler extends Handler {
 		/**
 		 *
 		 * @param clazz Class extends AbstractUVCCameraHandler
-		 * @param parent parent Activity
-		 * @param cameraView for still capturing
 		 * @param width
 		 * @param height
 		 * @param format either FRAME_FORMAT_YUYV(0) or FRAME_FORMAT_MJPEG(1)
 		 * @param bandwidthFactor
 		 */
 		CameraThread(final Class<? extends AbstractUVCCameraHandler> clazz,
-			final Activity parent, final CameraViewInterface cameraView,
 			final int width, final int height, final int format,
 			final float bandwidthFactor) {
 
@@ -318,8 +313,6 @@ abstract class AbstractUVCCameraHandler extends Handler {
 			mHeight = height;
 			mPreviewMode = format;
 			mBandwidthFactor = bandwidthFactor;
-			mWeakParent = new WeakReference<Activity>(parent);
-			mWeakCameraView = new WeakReference<CameraViewInterface>(cameraView);
 		}
 
 		@Override

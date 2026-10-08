@@ -70,7 +70,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 	//private UVCCameraHandler mHandlerR;
 	//private CameraViewInterface mUVCCameraViewR;
 	private UVCCamera mUVCCameraR;
-	private TextureView mUVCCameraViewR;
+	private SurfaceView mUVCCameraViewR;
 	private ImageButton mCaptureButtonR;
 	private Surface mRightPreviewSurface;
 	private final Object mSyncRight = new Object();
@@ -79,7 +79,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 	//private UVCCameraHandler mHandlerL;
 	//private CameraViewInterface mUVCCameraViewL;
 	private UVCCamera mUVCCameraL;
-	private TextureView mUVCCameraViewL;
+	private SurfaceView mUVCCameraViewL;
 	private ImageButton mCaptureButtonL;
 	private Surface mLeftPreviewSurface;
 	private final Object mSyncLeft = new Object();
@@ -97,7 +97,9 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 		setContentView(R.layout.activity_main);
 
 		//findViewById(R.id.RelativeLayout1).setOnClickListener(mOnClickListener);
-		mUVCCameraViewL = (TextureView)findViewById(R.id.camera_surface_view); //mUnityPlayer.getView(); //= (CameraViewInterface)findViewById(R.id.camera_view_L);
+		//mUVCCameraViewL = (TextureView)findViewById(R.id.camera_surface_view); //mUnityPlayer.getView(); //= (CameraViewInterface)findViewById(R.id.camera_view_L);
+		mUVCCameraViewL = (SurfaceView)findViewById(R.id.camera_surface_view);
+		mUVCCameraViewL.getHolder().addCallback(mSurfaceViewCallbackL);
 		//mUVCCameraViewL.getHolder().addCallback(mSurfaceViewCallbackL);
 		//mUVCCameraViewL.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
 		//((UVCCameraTextureView)mUVCCameraViewL).setOnClickListener(mOnClickListener);
@@ -106,7 +108,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 		//mCaptureButtonL.setVisibility(View.INVISIBLE);
 		//mHandlerL = UVCCameraHandler.createHandler(this, mUVCCameraViewL, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0]);
 
-		mUVCCameraViewR = (TextureView)findViewById(R.id.camera_surface_view); //mUnityPlayer.getView(); //= (CameraViewInterface)findViewById(R.id.camera_view_R);
+		mUVCCameraViewR = (SurfaceView)findViewById(R.id.camera_surface_view); //mUnityPlayer.getView(); //= (CameraViewInterface)findViewById(R.id.camera_view_R);
 		//mUVCCameraViewR.getHolder().addCallback(mSurfaceViewCallbackR);
 		//mUVCCameraViewR.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
 		//((UVCCameraTextureView)mUVCCameraViewR).setOnClickListener(mOnClickListener);
@@ -256,21 +258,10 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 				if (mUVCCameraL == null) {
 					mUVCCameraL = new UVCCamera();
 					mUVCCameraL.open(ctrlBlock);
-					//final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
-					//mUVCCameraL.startPreview(new Surface(st));
-					//mLeftPreviewSurface = mUVCCameraViewL.getHolder().getSurface();
-					//mUVCCameraL.setFrameCallback(mIFrameCallbackL, UVCCamera.PIXEL_FORMAT_);
-					//mUVCCameraL.setPreviewDisplay(mLeftPreviewSurface);
-					mUVCCameraL.setPreviewSize(640,480,1);
+					mLeftPreviewSurface = mUVCCameraViewL.getHolder().getSurface();
+					mUVCCameraL.setFrameCallback(mIFrameCallbackL, UVCCamera.PIXEL_FORMAT_RGBX);
+					mUVCCameraL.setPreviewDisplay(mLeftPreviewSurface);
 					mUVCCameraL.startPreview();
-
-					final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
-					if (st != null) {
-						mPreviewSurfaceL = new Surface(st);
-						mUVCCameraL.setPreviewDisplay(mPreviewSurfaceL);
-//						camera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_RGB565/*UVCCamera.PIXEL_FORMAT_NV21*/);
-						mUVCCameraL.startPreview();
-					}
 
 					/*runOnUiThread(new Runnable() {
 						@Override

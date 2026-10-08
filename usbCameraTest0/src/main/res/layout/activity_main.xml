@@ -29,7 +29,7 @@
     tools:context="com.serenegiant.usbcameratest0.MainActivity"
     tools:ignore="MergeRootFrame" >
 
-    <TextureView
+    <SurfaceView
         android:id="@+id/camera_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

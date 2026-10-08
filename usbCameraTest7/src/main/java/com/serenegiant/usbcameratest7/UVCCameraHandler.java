@@ -32,55 +32,44 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 
 	/**
 	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG, default bandwidth
-	 * @param parent
-	 * @param cameraView
 	 * @param width
 	 * @param height
 	 * @return
 	 */
 	public static final UVCCameraHandler createHandler(
-			final Activity parent, final CameraViewInterface cameraView,
 			final int width, final int height) {
 
-		return createHandler(parent, cameraView, width, height, UVCCamera.FRAME_FORMAT_MJPEG, UVCCamera.DEFAULT_BANDWIDTH);
+		return createHandler(width, height, UVCCamera.FRAME_FORMAT_MJPEG, UVCCamera.DEFAULT_BANDWIDTH);
 	}
 
 	/**
 	 * create UVCCameraHandler, use MediaVideoEncoder, try MJPEG
-	 * @param parent
-	 * @param cameraView
 	 * @param width
 	 * @param height
 	 * @param bandwidthFactor
 	 * @return
 	 */
 	public static final UVCCameraHandler createHandler(
-			final Activity parent, final CameraViewInterface cameraView,
 			final int width, final int height, final float bandwidthFactor) {
 
-		return createHandler(parent, cameraView, width, height, UVCCamera.FRAME_FORMAT_MJPEG, bandwidthFactor);
+		return createHandler(width, height, UVCCamera.FRAME_FORMAT_MJPEG, bandwidthFactor);
 	}
 
 	/**
 	 * create UVCCameraHandler, default bandwidth
-	 * @param parent
-	 * @param cameraView
 	 * @param width
 	 * @param height
 	 * @param format either UVCCamera.FRAME_FORMAT_YUYV(0) or UVCCamera.FRAME_FORMAT_MJPEG(1)
 	 * @return
 	 */
 	public static final UVCCameraHandler createHandler(
-			final Activity parent, final CameraViewInterface cameraView,
 			final int width, final int height, final int format) {
 
-		return createHandler(parent, cameraView, width, height, format, UVCCamera.DEFAULT_BANDWIDTH);
+		return createHandler(width, height, format, UVCCamera.DEFAULT_BANDWIDTH);
 	}
 
 	/**
 	 * create UVCCameraHandler
-	 * @param parent
-	 * @param cameraView
 	 * @param width
 	 * @param height
 	 * @param format either UVCCamera.FRAME_FORMAT_YUYV(0) or UVCCamera.FRAME_FORMAT_MJPEG(1)
@@ -88,10 +77,9 @@ public class UVCCameraHandler extends AbstractUVCCameraHandler {
 	 * @return
 	 */
 	public static final UVCCameraHandler createHandler(
-			final Activity parent, final CameraViewInterface cameraView,
 			final int width, final int height, final int format, final float bandwidthFactor) {
 
-		final CameraThread thread = new CameraThread(UVCCameraHandler.class, parent, cameraView, width, height, format, bandwidthFactor);
+		final CameraThread thread = new CameraThread(UVCCameraHandler.class, width, height, format, bandwidthFactor);
 		thread.start();
 		return (UVCCameraHandler)thread.getHandler();
 	}
