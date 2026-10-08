@@ -164,8 +164,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 	private final OnClickListener mOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(final View view) {
-			switch (view.getId()) {
-			case R.id.capture_button:
+			if (view.getId() == R.id.capture_button) {
 				if (mCameraHandler.isOpened()) {
 					if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
 						if (!mCameraHandler.isRecording()) {
@@ -177,7 +176,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 						}
 					}
 				}
-				break;
 			}
 		}
 	};
@@ -186,15 +184,13 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 		= new CompoundButton.OnCheckedChangeListener() {
 		@Override
 		public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-			switch (compoundButton.getId()) {
-			case R.id.camera_button:
+			if (compoundButton.getId() == R.id.camera_button) {
 				if (isChecked && !mCameraHandler.isOpened()) {
 					CameraDialog.showDialog(MainActivity.this);
 				} else {
 					mCameraHandler.close();
 					setCameraButton(false);
 				}
-				break;
 			}
 		}
 	};
@@ -205,8 +201,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 	private final OnLongClickListener mOnLongClickListener = new OnLongClickListener() {
 		@Override
 		public boolean onLongClick(final View view) {
-			switch (view.getId()) {
-			case R.id.camera_view:
+			if (view.getId() == R.id.camera_view) {
 				if (mCameraHandler.isOpened()) {
 					if (checkPermissionWriteExternalStorage()) {
 						mCameraHandler.captureStill();

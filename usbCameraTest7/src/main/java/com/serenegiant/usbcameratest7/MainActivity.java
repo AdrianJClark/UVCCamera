@@ -140,8 +140,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 	private final OnClickListener mOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(final View view) {
-			switch (view.getId()) {
-			case R.id.camera_view_L:
+			if (view.getId() == R.id.camera_view_L) {
 				if (mHandlerL != null) {
 					if (!mHandlerL.isOpened()) {
 						CameraDialog.showDialog(MainActivity.this);
@@ -150,23 +149,21 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 						setCameraButton();
 					}
 				}
-				break;
-			case R.id.capture_button_L:
+			} else if (view.getId() == R.id.capture_button_L) {
 				if (mHandlerL != null) {
 					if (mHandlerL.isOpened()) {
 						if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
 							if (!mHandlerL.isRecording()) {
-								mCaptureButtonL.setColorFilter(0xffff0000);	// turn red
+								mCaptureButtonL.setColorFilter(0xffff0000);    // turn red
 								mHandlerL.startRecording();
 							} else {
-								mCaptureButtonL.setColorFilter(0);	// return to default color
+								mCaptureButtonL.setColorFilter(0);    // return to default color
 								mHandlerL.stopRecording();
 							}
 						}
 					}
 				}
-				break;
-			case R.id.camera_view_R:
+			} else if (view.getId() == R.id.camera_view_R) {
 				if (mHandlerR != null) {
 					if (!mHandlerR.isOpened()) {
 						CameraDialog.showDialog(MainActivity.this);
@@ -175,22 +172,20 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 						setCameraButton();
 					}
 				}
-				break;
-			case R.id.capture_button_R:
+			} else if (view.getId() == R.id.capture_button_R) {
 				if (mHandlerR != null) {
 					if (mHandlerR.isOpened()) {
 						if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
 							if (!mHandlerR.isRecording()) {
-								mCaptureButtonR.setColorFilter(0xffff0000);	// turn red
+								mCaptureButtonR.setColorFilter(0xffff0000);    // turn red
 								mHandlerR.startRecording();
 							} else {
-								mCaptureButtonR.setColorFilter(0);	// return to default color
+								mCaptureButtonR.setColorFilter(0);    // return to default color
 								mHandlerR.stopRecording();
 							}
 						}
 					}
 				}
-				break;
 			}
 		}
 	};

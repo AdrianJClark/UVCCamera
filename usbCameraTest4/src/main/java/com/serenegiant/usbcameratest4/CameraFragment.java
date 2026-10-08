@@ -264,8 +264,7 @@ public class CameraFragment extends BaseFragment {
 	private final OnClickListener mOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(final View v) {
-			switch (v.getId()) {
-			case R.id.start_button:
+			if (v.getId() == R.id.start_button) {
 				if (DEBUG) Log.v(TAG, "onClick:start");
 				// start service
 				final List<UsbDevice> list = mUSBMonitor.getDeviceList();
@@ -277,8 +276,7 @@ public class CameraFragment extends BaseFragment {
 					mCameraClient.connect();
 					setPreviewButton(false);
 				}
-				break;
-			case R.id.stop_button:
+			} else if (v.getId() == R.id.stop_button) {
 				if (DEBUG) Log.v(TAG, "onClick:stop");
 				// stop service
 				if (mCameraClient != null) {
@@ -287,8 +285,7 @@ public class CameraFragment extends BaseFragment {
 					mCameraClient = null;
 				}
 				enableButtons(false);
-				break;
-			case R.id.camera_view_sub:
+			} else if (v.getId() == R.id.camera_view_sub) {
 				if (DEBUG) Log.v(TAG, "onClick:sub view");
 				if (isSubView) {
 					mCameraClient.removeSurface(mCameraViewSub.getHolder().getSurface());
@@ -296,8 +293,7 @@ public class CameraFragment extends BaseFragment {
 					mCameraClient.addSurface(mCameraViewSub.getHolder().getSurface(), false);
 				}
 				isSubView = !isSubView;
-				break;
-			case R.id.record_button:
+			} else if (v.getId() ==  R.id.record_button) {
 				if (DEBUG) Log.v(TAG, "onClick:record");
 				if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
 					queueEvent(new Runnable() {
@@ -323,8 +319,7 @@ public class CameraFragment extends BaseFragment {
 						}
 					}, 0);
 				}
-				break;
-			case R.id.still_button:
+			} else if (v.getId() ==  R.id.still_button) {
 				if (DEBUG) Log.v(TAG, "onClick:still capture");
 				if (mCameraClient != null && checkPermissionWriteExternalStorage()) {
 					queueEvent(new Runnable() {
@@ -334,8 +329,6 @@ public class CameraFragment extends BaseFragment {
 						}
 					}, 0);
 				}
-
-				break;
 			}
 		}
 	};

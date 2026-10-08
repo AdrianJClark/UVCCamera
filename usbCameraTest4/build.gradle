@@ -28,6 +28,12 @@ android {
 	buildToolsVersion versionBuildTool
 	namespace "com.serenegiant.usbcameratest4"
 
+	buildToolsVersion "35.0.1"
+
+	buildFeatures {
+		aidl true
+	}
+
 	compileOptions {
 		sourceCompatibility javaSourceCompatibility
 		targetCompatibility javaTargetCompatibility
