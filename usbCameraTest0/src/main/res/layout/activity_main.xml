@@ -29,17 +29,32 @@
     tools:context="com.serenegiant.usbcameratest0.MainActivity"
     tools:ignore="MergeRootFrame" >
 
-    <SurfaceView
+    <TextureView
         android:id="@+id/camera_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ImageButton
-        android:id="@+id/camera_button"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:contentDescription="@string/camera"
-        android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_menu_camera" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/camera_buttonL"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:contentDescription="@string/camera"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_camera" />
+
+        <ImageButton
+            android:id="@+id/camera_buttonR"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:contentDescription="@string/camera"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_camera" />
+
+    </LinearLayout>
 
 </FrameLayout>
